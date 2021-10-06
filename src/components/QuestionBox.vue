@@ -7,7 +7,8 @@
 
       <hr class="my-4" />
 
-      <p></p>
+      <p>List of answers</p>
+      <p v-for="(answer, index) in answers" :key="index">{{ answer }}</p>
 
       <b-button variant="primary" href="#" @click="prev">Previous</b-button>
       <b-button variant="success" href="#" @click="next">Next</b-button>
@@ -20,6 +21,13 @@ export default {
     currentQuestion: Object,
     prev: Function,
     next: Function,
+  },
+  computed: {
+    answers() {
+      let answers = [...this.currentQuestion.incorrect_answers];
+      answers.push(this.currentQuestion.correct_answer);
+      return answers;
+    },
   },
 };
 </script>
