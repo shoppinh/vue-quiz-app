@@ -11,44 +11,91 @@
         <h4>List of answers</h4>
         <b-list-group>
           <b-list-group-item
-            v-for="(answer, index) in answers"
+            v-for="(answer, index) in shuffledAnswers"
             :key="index"
             @click="selectAnswer(index)"
-            :class="[selectedIndex === index ? 'selected' : '']"
+            :class="showAnswerClass(index)"
             >{{ answer }}</b-list-group-item
           >
         </b-list-group>
 
-        <b-button variant="primary" href="#" @click="prev">Previous</b-button>
-        <b-button variant="success" href="#" @click="next">Next</b-button>
+        <b-button variant="primary" href="#" @click="next">Next</b-button>
+        <b-button
+          variant="success"
+          href="#"
+          @click="submitAnswer"
+          :disabled="selectedIndex === null || answered"
+          >Submit</b-button
+        >
       </b-jumbotron>
     </b-container>
   </div>
 </template>
 <script>
+import _ from "lodash";
 export default {
   props: {
     currentQuestion: Object,
-    prev: Function,
     next: Function,
+    increment: Function,
   },
   data() {
     return {
       selectedIndex: null,
+      correctIndex: null,
+      shuffledAnswers: [],
+      answered: false,
     };
   },
   methods: {
     selectAnswer(index) {
       this.selectedIndex = index;
     },
-  },
-  computed: {
-    answers() {
-      let answers = [...this.currentQuestion.incorrect_answers];
-      answers.push(this.currentQuestion.correct_answer);
-      return answers;
+    submitAnswer() {
+      let isCorrect = false;
+      if (this.selectedIndex === this.correctIndex) {
+        isCorrect = true;
+      }
+      this.increment(isCorrect);
+      this.answered = true;
+    },
+    shuffleAnswer() {
+      let answers = [
+        ...this.currentQuestion.incorrect_answers,
+        this.currentQuestion.correct_answer,
+      ];
+      this.shuffledAnswers = _.shuffle(answers);
+      this.correctIndex = this.shuffledAnswers.indexOf(
+        this.currentQuestion.correct_answer
+      );
+    },
+    showAnswerClass(index) {
+      let answerClass = "";
+      if (!this.answered && this.selectedIndex === index) {
+        answerClass = "selected";
+      } else if (this.answered && this.correctIndex === index) {
+        answerClass = "correct";
+      } else if (
+        this.answered &&
+        this.selectedIndex === index &&
+        this.correctIndex !== index
+      ) {
+        answerClass = "incorrect";
+      }
+      return answerClass;
     },
   },
+  watch: {
+    currentQuestion: {
+      immediate: true,
+      handler() {
+        this.selectedIndex = null;
+        this.shuffleAnswer();
+        this.answered = false;
+      },
+    },
+  },
+  computed: {},
 };
 </script>
 <style scoped>
@@ -66,10 +113,14 @@ export default {
 .selected:hover {
   background-color: lightblue;
 }
-.correct {
+.correct,
+.correct:hover {
   background-color: green;
+  color: white;
 }
-.incorrect {
+.incorrect,
+.incorrect:hover {
   background-color: red;
+  color: white;
 }
 </style>

@@ -1,11 +1,11 @@
 <template>
   <div id="app">
-    <Header :questionLength="questions.length" :index="index" />
+    <Header :questionLength="questions.length" :numOfCorrect="numOfCorrect" />
     <QuestionBox
       v-if="questions.length"
       :currentQuestion="questions[index]"
       :next="next"
-      :prev="prev"
+      :increment="increment"
     />
   </div>
 </template>
@@ -20,6 +20,7 @@ export default {
     return {
       questions: [],
       index: 0,
+      numOfCorrect: 0,
     };
   },
   components: {
@@ -28,11 +29,13 @@ export default {
   },
   methods: {
     next: function() {
-      this.index++;
+      if (this.index < this.questions.length) {
+        this.index++;
+      }
     },
-    prev: function() {
-      if (this.index > 0) {
-        this.index--;
+    increment: function(isCorrect) {
+      if (isCorrect) {
+        this.numOfCorrect++;
       }
     },
   },

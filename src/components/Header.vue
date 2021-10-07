@@ -2,7 +2,9 @@
   <div>
     <b-nav>
       <b-nav-item disabled>Question</b-nav-item>
-      <b-nav-item disabled>{{ index + 1 }}/{{ questionLength }}</b-nav-item>
+      <b-nav-item disabled
+        >Counter : {{ numOfCorrect }}/{{ questionLength }}</b-nav-item
+      >
     </b-nav>
   </div>
 </template>
@@ -10,7 +12,7 @@
 export default {
   props: {
     questionLength: Number,
-    index: Number,
+    numOfCorrect: Number,
   },
 };
 </script>
